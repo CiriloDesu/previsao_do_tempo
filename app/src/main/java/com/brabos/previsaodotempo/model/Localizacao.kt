@@ -2,15 +2,13 @@ package com.brabos.previsaodotempo.model
 
 import com.google.gson.annotations.SerializedName
 
-
 data class Localizacao(
-    val key: String,
-   @SerializedName("localizedName") val cidade: String,
-    val administrativeArea: AdministrativeArea
+    @SerializedName("Key") val key: String,
+    @SerializedName("LocalizedName") val cidade: String,
+    @SerializedName("AdministrativeArea") val administrativeArea: AdministrativeArea
 )
 
 data class AdministrativeArea(
-   @SerializedName("id") val siglaEstado: String,
-   @SerializedName("localizedName") val estado: String
+    @SerializedName("ID") val siglaEstado: String,
+    @SerializedName("LocalizedName") val estado: String
 )
-

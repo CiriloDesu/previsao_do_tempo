@@ -1,28 +1,37 @@
-package com.brabos.previsaodotempo.model
-
 import com.google.gson.annotations.SerializedName
 
-data class DailyForecast(
-    val date: String,
-    val epochDate: Long,
-    @SerializedName("temperature") val temperatura: Temperature,
-    val day: ForecastDetails,
-    val night: ForecastDetails
+data class Tempo(
+    @SerializedName("Key") val key: String,
+    val LocalizedName: String,
+    val Temperature: Temperature,
+    val Day: Day,
+    val Night: Night
 )
+
 
 data class Temperature(
-    val minimum: TemperatureDetail,
-    val maximum: TemperatureDetail
+    val Minimum: Minimum,
+    val Maximum: Maximum
 )
 
-data class TemperatureDetail(
-    val value: Int,
-    val unit: String,
-    val unitType: Int
+data class Minimum(
+    val Value: Double,
+    val Unit: String
 )
 
-data class ForecastDetails(
-    val icon: Int,
-    val iconPhrase: String,
-    val hasPrecipitation: Boolean
+data class Maximum(
+    val Value: Double,
+    val Unit: String
+)
+
+data class Day(
+    val Icon: Int,
+    @SerializedName("IconPhrase") val iconPhrase: String,
+    val HasPrecipitation: Boolean
+)
+
+data class Night(
+    val Icon: Int,
+    @SerializedName("IconPhrase") val iconPhrase: String,
+    val HasPrecipitation: Boolean
 )
