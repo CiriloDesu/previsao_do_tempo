@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">previsao do tempo</string>
+    <string name="app_name">Forecast</string>
+    <string name="pesquisa">Search city here</string>
+    <string name="umidade">Humidity</string>
+    <string name="sense_termica">Feels Like</string>
+    <string name="temp_max">Max Temp</string>
+    <string name="uv">UV</string>
 </resources>

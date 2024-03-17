@@ -1,9 +1,7 @@
 package com.brabos.previsaodotempo
 
-import LocalizacaoRetrofitFactory
-import LocalizacaoService
 import Tempo
-import TempoService
+import TempoRetrofitFactory
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -37,13 +35,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.brabos.previsaodotempo.model.Localizacao
-import com.brabos.previsaodotempo.service.TempoRetrofitFactory
 import com.brabos.previsaodotempo.ui.theme.DarkBlue
 import com.brabos.previsaodotempo.ui.theme.PrevisaoDoTempoTheme
 import com.brabos.previsaodotempo.ui.theme.VeryLightGray
@@ -52,6 +49,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -68,104 +66,26 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+
 @Composable
 fun TempoScreen() {
+    // Variável para armazenar o resultado da pesquisa
+    var tempo by remember { mutableStateOf<Tempo?>(null) }
+    var listTempos by remember { mutableStateOf<List<Tempo>>(emptyList()) }
+
+    // Layout da tela
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 64.dp, start = 16.dp, end = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
-    )
-    {
+    ) {
         ImagemTopo()
-        InfoPrincipal()
-        InformacoesTabela()
+        tempo?.let { InformacoesTabela(it) }
         Pesquisa()
     }
 }
 
-@Composable
-fun Pesquisa() {
-    var pesquisaCidade by remember {
-        mutableStateOf("")
-    }
-
-    var listLocalizacaoResult by remember {
-        mutableStateOf(listOf<Localizacao>())
-    }
-
-    var listTemperaturaResult by remember{
-        mutableStateOf(listOf<Tempo>())
-    }
-
-
-
-    Column() {
-        OutlinedTextField(
-            value = pesquisaCidade,
-            onValueChange = {
-                pesquisaCidade = it
-            },
-            label = {
-                Text(text = "Pesquise cidade aqui ")
-            },
-            trailingIcon = {
-                IconButton(onClick = {
-                    val call = LocalizacaoRetrofitFactory().getLocalizacaoService().getLocalizacaoByCity(
-                        apiKey = "5C5F23ps4tRw3fa3TgePBJdsMENKP6Q9",
-                        cidade = pesquisaCidade
-                    )
-                    call.enqueue(object : Callback<List<Localizacao>> {
-                        override fun onResponse(
-                            call: Call<List<Localizacao>>,
-                            response: Response<List<Localizacao>>
-                        ) {
-                            if (response.isSuccessful) {
-                                var listLocalizacao = response.body()
-                                if (listLocalizacao != null && listLocalizacao.isNotEmpty()) {
-                                    val localizacao = listLocalizacao.first()
-                                    val keyResposta = localizacao.key
-
-                                    // Agora você pode usar a key para fazer a próxima chamada
-                                    val callTempo = TempoRetrofitFactory().getTempoService().getDailyForecast(
-                                        cityKey = keyResposta,
-                                        apiKey = "5C5F23ps4tRw3fa3TgePBJdsMENKP6Q9"
-                                    )
-                                    callTempo.enqueue(object : Callback<List<Tempo>> {
-                                        override fun onResponse(
-                                            call: Call<List<Tempo>>,
-                                            response: Response<List<Tempo>>
-                                        ) {
-                                            if (response.isSuccessful) {
-                                                val listTempos = response.body()
-                                                // Faça o que precisa com a lista de Tempos
-                                            } else {
-                                                Log.i("CIRILO", "onResponse Tempo: ${response.message()}")
-                                            }
-                                        }
-
-                                        override fun onFailure(call: Call<List<Tempo>>, t: Throwable) {
-                                            Log.i("CIRILO", "onFailure Tempo: ${t.message}")
-                                        }
-                                    })
-                                }
-                            } else {
-                                Log.i("CIRILO", "onResponse Localizacao: ${response.message()}")
-                            }
-                        }
-
-                        override fun onFailure(call: Call<List<Localizacao>>, t: Throwable) {
-                            Log.i("CIRILO", "onFailure Localizacao: ${t.message}")
-                        }
-                    })
-                }) {
-                    Icon(imageVector = Icons.Default.Search, contentDescription = "")
-                }
-
-            }
-        )
-    }
-}
 
 
 @Composable
@@ -177,74 +97,169 @@ fun ImagemTopo() {
 }
 
 
+//@Composable
+//fun InfoPrincipal(listTempos: List<Tempo>) {
+//    Column(
+//        modifier = Modifier
+//            .padding(top = 24.dp),
+//        horizontalAlignment = Alignment.CenterHorizontally
+//    ) {
+//        listTempos.forEach { tempo ->
+//            Column(
+//                horizontalAlignment = Alignment.CenterHorizontally,
+//                modifier = Modifier.padding(bottom = 24.dp)
+//            ) {
+//                Text(
+//                    text = tempo.atual.temperaturaCelsius.toString(),
+//                    color = DarkBlue,
+//                    fontSize = 48.sp,
+//                    fontWeight = FontWeight.Bold
+//                )
+//                Text(
+//                    text = "${tempo.localizacao.nome}, ${tempo.localizacao.regiao}",
+//                    color = DarkBlue,
+//                    fontWeight = FontWeight.Medium,
+//                    fontSize = 20.sp,
+//                    modifier = Modifier.padding(top = 16.dp)
+//                )
+//                Text(
+//                    text = tempo.atual.condicao?.texto ?: "",
+//                    color = Color.Gray,
+//                    fontSize = 16.sp,
+//                    textAlign = TextAlign.Center,
+//                    modifier = Modifier.padding(vertical = 24.dp)
+//                )
+//            }
+//        }
+//    }
+//}
+
+
+
 @Composable
-fun InfoPrincipal() {
+fun InformacoesTabela(tempo: Tempo) {
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(4.dp))
+            .background(VeryLightGray)
+            .padding(16.dp)
+    ) {
+        Row {
+            InformacoesItem(
+                iconRes = R.drawable.ic_humidity,
+                title = stringResource(id = R.string.umidade),
+                subtitle = "${tempo.atual.umidade}%",
+                modifier = Modifier.weight(1f)
+            )
+            InformacoesItem(
+                iconRes = R.drawable.ic_sun_full,
+                title = stringResource(id = R.string.temp_max),
+                subtitle = "${tempo.atual.temperaturaCelsius}°C",
+                modifier = Modifier.weight(1f)
+            )
+        }
+        Divider(color = VeryLightGray)
+        Row {
+            InformacoesItem(
+                iconRes = R.drawable.ic_termo,
+                title = stringResource(id = R.string.sense_termica),
+                subtitle = "${tempo.atual.sensacaoTermicaCelsius}°C",
+                modifier = Modifier.weight(1f)
+            )
+            InformacoesItem(
+                iconRes = R.drawable.ic_sun_half,
+                title = stringResource(id = R.string.uv),
+                subtitle = "${tempo.atual.uv}",
+                modifier = Modifier.weight(1f)
+            )
+        }
+    }
     Column(
         modifier = Modifier
             .padding(top = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "11º",
-            color = Color(R.color.DarkBlue),
-            fontSize = 48.sp,
-            fontWeight = FontWeight.Bold
-        )
-        Text(
-            text = "Aracaju, SE",
-            color = Color(R.color.DarkBlue),
-            fontWeight = FontWeight.Medium,
-            fontSize = 20.sp,
-            modifier = Modifier.padding(top = 16.dp)
-        )
-        Text(
-            text = "Chuvoso, parcialmente nublado. \nVento de 10 a 15km/h",
-            color = Color.Gray,
-            fontSize = 16.sp,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(vertical = 24.dp)
-        )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(bottom = 24.dp)
+        ) {
+            Text(
+                text = tempo.atual.temperaturaCelsius.toString(),
+                color = DarkBlue,
+                fontSize = 48.sp,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = "${tempo.localizacao.nome}, ${tempo.localizacao.regiao}",
+                color = DarkBlue,
+                fontWeight = FontWeight.Medium,
+                fontSize = 20.sp,
+                modifier = Modifier.padding(top = 16.dp)
+            )
+            Text(
+                text = tempo.atual.condicao?.texto ?: "",
+                color = Color.Gray,
+                fontSize = 16.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(vertical = 24.dp)
+            )
+        }
     }
 }
 
+
 @Composable
-fun InformacoesTabela() {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(4.dp))
-            .background(
-                VeryLightGray
-            )
-    ) {
-        Row(Modifier.padding(16.dp)) {
-            InformacoesItem(
-                iconRes = R.drawable.ic_humidity,
-                title = "Humidade",
-                subtitle = "85%",
-                modifier = Modifier.weight(1f)
-            )
-            InformacoesItem(
-                iconRes = R.drawable.ic_sun_full,
-                title = "Temp Máx",
-                subtitle = "TEMP AQUI",
-                modifier = Modifier.weight(1f)
-            )
-        }
-        Divider(color = VeryLightGray)
-        Row(Modifier.padding(16.dp)) {
-            InformacoesItem(
-                iconRes = R.drawable.ic_termo,
-                title = "Sens Térmica",
-                subtitle = "5:30 AM",
-                modifier = Modifier.weight(1f)
-            )
-            InformacoesItem(
-                iconRes = R.drawable.ic_sun_half,
-                title = "Temp Min",
-                subtitle = "TEMP AQUI",
-                modifier = Modifier.weight(1f)
-            )
+fun Pesquisa() {
+    var pesquisaCidade by remember {
+        mutableStateOf("")
+    }
+
+    var listTempos by remember {
+        mutableStateOf<List<Tempo>>(emptyList())
+    }
+
+
+
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        OutlinedTextField(
+            value = pesquisaCidade,
+            onValueChange = {
+                pesquisaCidade = it
+            },
+            label = {
+                Text(text = stringResource(id = R.string.pesquisa))
+            },
+            trailingIcon = {
+                IconButton(onClick = {
+                    val call = TempoRetrofitFactory.service.getWForecast(apiKey = "d9f83e3087e04513a3362756241703", query = pesquisaCidade)
+                    call.enqueue(object : Callback<Tempo> {
+                        override fun onResponse(
+                            call: Call<Tempo>,
+                            response: Response<Tempo>
+                        ) {
+                            val tempoResponse = response.body()
+                            if (tempoResponse != null) {
+                                listTempos = listOf(tempoResponse)
+                                Log.d("Pesquisa", "listTempos: $listTempos")
+                            }
+                        }
+
+                        override fun onFailure(call: Call<Tempo>, t: Throwable) {
+                            Log.i("ErroA", "onFailure: ${t.message}")
+                        }
+
+                    })
+                }) {
+                    Icon(imageVector = Icons.Default.Search, contentDescription = "")
+                }
+            }
+        )
+
+        // Exibir a lista de tempos
+        listTempos.forEach { tempo ->
+            InformacoesTabela(tempo)
         }
     }
 }

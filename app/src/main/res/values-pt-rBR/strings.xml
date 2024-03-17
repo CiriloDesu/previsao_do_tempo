@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+<string name="app_name">Previsao do Tempo</string>
+<string name="pesquisa">Pesquise cidade aqui</string>
+<string name="umidade">previsao do tempo</string>
+<string name="sense_termica">Sens. Térmica</string>
+<string name="temp_max">Tempo. Máx</string>
+<string name="uv">UV</string>
+</resources>
