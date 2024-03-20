@@ -41,6 +41,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.brabos.previsaodotempo.screens.FormLogin
 import com.brabos.previsaodotempo.ui.theme.DarkBlue
 import com.brabos.previsaodotempo.ui.theme.PrevisaoDoTempoTheme
 import com.brabos.previsaodotempo.ui.theme.VeryLightGray
@@ -53,6 +54,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            FormLogin()
             PrevisaoDoTempoTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(

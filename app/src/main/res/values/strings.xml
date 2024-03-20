@@ -5,4 +5,9 @@
     <string name="sense_termica">Feels Like</string>
     <string name="temp_max">Max Temp</string>
     <string name="uv">UV</string>
+    <string name="hint_username">Username</string>
+    <string name="hint_passworld">Passworld</string>
+    <string name="txt_remember_me">Remember me</string>
+    <string name="txt_forgot_pass">Forgot Passsword?</string>
+    <string name="txt_btt_login">LOGIN</string>
 </resources>

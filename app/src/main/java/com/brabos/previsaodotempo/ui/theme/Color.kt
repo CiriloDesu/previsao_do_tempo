@@ -13,3 +13,8 @@ val Pink40 = Color(0xFF7D5260)
 val DarkBlue = Color(0xFF232751)
 val VeryLightGray = Color(0xFFF8FAFB)
 val LightGray = Color(0xFFF3F2F5)
+
+val Blue900 = Color(0xFF0F47A1)
+val Blue700 = Color(0xFF1976D2)
+val Blue500 = Color(0xFF2196F3)
+val Blue200 = Color(0xFF90CAF9)
